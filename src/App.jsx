@@ -1,13 +1,14 @@
+import Register from "./Register";
 
-import './App.css'
-import Login from './pages/Login.jsx';
+import "./App.css";
+import Login from "./pages/Login.jsx";
 function App() {
-
   return (
     <>
-     <Login />
+      <Register />
+      <Login />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
