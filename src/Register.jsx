@@ -1,7 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useToast } from "./useToast";
 
 const Register = () => {
+  const navigate = useNavigate();
+  const { showToast } = useToast();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -11,13 +16,6 @@ const Register = () => {
 
   const [agreed, setAgreed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [toast, setToast] = useState(null);
-
-  useEffect(() => {
-    if (!toast) return;
-    const timer = setTimeout(() => setToast(null), 3000);
-    return () => clearTimeout(timer);
-  }, [toast]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -37,15 +35,15 @@ const Register = () => {
 
   const validate = () => {
     if (!formData.name.trim() || !formData.email.trim()) {
-      setToast({ message: "Veuillez remplir tous les champs.", type: "error" });
+      showToast("Veuillez remplir tous les champs.", "error");
       return false;
     }
     if (formData.password.length < 8) {
-      setToast({ message: "Le mot de passe doit faire au moins 8 caractères.", type: "error" });
+      showToast("Le mot de passe doit faire au moins 8 caractères.", "error");
       return false;
     }
     if (formData.password !== formData.confirmPassword) {
-      setToast({ message: "Les mots de passe ne correspondent pas !", type: "error" });
+      showToast("Les mots de passe ne correspondent pas !", "error");
       return false;
     }
     return true;
@@ -62,12 +60,14 @@ const Register = () => {
         password: formData.password,
         password_confirmation: formData.confirmPassword,
       });
-      setToast({ message: "Compte créé avec succès ! 🎉", type: "success" });
+      showToast("Compte créé avec succès ! 🎉", "success");
       setFormData({ name: "", email: "", password: "", confirmPassword: "" });
       setAgreed(false);
+      // Wait for toast, then redirect.
+      setTimeout(() => navigate('/login'), 1200);
     } catch (error) {
       const msg = error.response?.data?.message || "Erreur, veuillez réessayer.";
-      setToast({ message: msg, type: "error" });
+      showToast(msg, "error");
     } finally {
       setIsLoading(false);
     }
@@ -87,8 +87,12 @@ const Register = () => {
               <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2Z" fill="white" />
             </svg>
           </div>
-          <h1 className="text-lg font-semibold mb-0.5 text-center">Create account</h1>
-          <p className="text-[12px] text-[#8888aa] mb-5 text-center">Join Chattio — it's free</p>
+          <h1 className="text-lg font-semibold mb-0.5 text-center">
+            Create account
+          </h1>
+          <p className="text-[12px] text-[#8888aa] mb-5 text-center">
+            Join Chattio — it's free
+          </p>
           <form className="w-full flex flex-col" onSubmit={handleSubmit}>
             <Field label="Full name">
               <input
@@ -97,7 +101,6 @@ const Register = () => {
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="Enter your full name"
-                required
                 className="flex-1 bg-transparent text-[12px] text-[#1a1a2e] outline-none placeholder-[#8888aa] w-full"
               />
             </Field>
@@ -108,7 +111,6 @@ const Register = () => {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="you@example.com"
-                required
                 className="flex-1 bg-transparent text-[12px] text-[#1a1a2e] outline-none placeholder-[#8888aa] w-full"
               />
             </Field>
@@ -119,7 +121,6 @@ const Register = () => {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Enter your password"
-                required
                 className="flex-1 bg-transparent text-[12px] text-[#1a1a2e] outline-none placeholder-[#8888aa] w-full"
               />
             </Field>
@@ -130,7 +131,9 @@ const Register = () => {
                     <div
                       key={level}
                       className="flex-1 h-[3px] rounded-sm transition-colors duration-300"
-                      style={{ background: level <= strength ? strengthColor : "#e2e0da" }}
+                      style={{
+                        background: level <= strength ? strengthColor : "#e2e0da",
+                      }}
                     />
                   ))}
                 </div>
@@ -146,7 +149,6 @@ const Register = () => {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 placeholder="Confirm your password"
-                required
                 className="flex-1 bg-transparent text-[12px] text-[#1a1a2e] outline-none placeholder-[#8888aa] w-full"
               />
             </Field>
@@ -197,26 +199,26 @@ const Register = () => {
             </button>
             <p className="text-[12px] text-[#8888aa] text-center">
               Already have an account?{" "}
-              <a href="#login" className="text-[#4F6EF7] font-medium hover:underline">Sign in</a>
+              <Link to="/login" className="text-[#4F6EF7] font-medium hover:underline">Sign in</Link>
             </p>
           </form>
         </div>
       </div>
-      {toast && (
-        <div className="fixed right-7 top-8 bg-[#1d1d1f] text-white px-4 py-3 rounded-xl text-[13px] font-medium flex items-center gap-2 shadow-[0_8px_32px_rgba(0,0,0,0.2)] z-[999] animate-[slideIn_0.3s_ease]">
-          {toast.type === "success" ? <CheckIcon /> : <XIcon />}
-          {toast.message}
-        </div>
-      )}
     </div>
   );
 };
 
 const Field = ({ label, icon, children }) => (
   <div className="w-full mb-3">
-    <label className="text-[11px] font-medium text-[#4a4a6a] mb-1 block">{label}</label>
+    <label className="text-[11px] font-medium text-[#4a4a6a] mb-1 block">
+      {label}
+    </label>
     <div className="w-full h-[36px] border border-[#e2e0da] rounded-lg bg-[#fdfcf9] px-2.5 flex items-center gap-1.5 focus-within:border-[#4F6EF7] focus-within:bg-[#eef1fe] transition-colors group">
-      {icon && <span className="text-[#8888aa] group-focus-within:text-[#4F6EF7] transition-colors shrink-0">{icon}</span>}
+      {icon && (
+        <span className="text-[#8888aa] group-focus-within:text-[#4F6EF7] transition-colors shrink-0">
+          {icon}
+        </span>
+      )}
       {children}
     </div>
   </div>
@@ -242,18 +244,6 @@ const GoogleIcon = () => (
     <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
     <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
     <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
-  </svg>
-);
-
-const CheckIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#34C759" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M20 6L9 17l-5-5" />
-  </svg>
-);
-
-const XIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FF3B30" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M18 6L6 18M6 6l12 12" />
   </svg>
 );
 
