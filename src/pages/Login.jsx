@@ -24,6 +24,11 @@ const Login = () => {
     return true;
   };
 
+  const handleGoogleLogin = () => {
+    const googleRedirectUrl = "http://127.0.0.1:8000/api/auth/google/redirect";
+    window.location.assign(googleRedirectUrl);
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!validate()) return;
@@ -114,7 +119,7 @@ const Login = () => {
 
             <button
               type="button"
-              onClick={() => console.log("Google login — pas encore implémenté")}
+              onClick={handleGoogleLogin}
               className="w-full h-[36px] bg-white border border-[#e2e0da] rounded-[8px] text-[12px] font-medium text-[#4a4a6a] cursor-pointer flex items-center justify-center gap-2 mb-4 hover:bg-gray-50 active:translate-y-[1px] transition-all"
             >
               <GoogleIcon />
