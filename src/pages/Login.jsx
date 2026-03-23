@@ -43,6 +43,7 @@ const Login = () => {
       setFormData({ email: "", password: "" });
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("username",response.data.user.name);
+      localStorage.setItem("email",response.data.user.email);
       //console.log(response.data.user.name)
       navigate("/dash");
     } catch (error) {
