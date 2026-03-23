@@ -26,7 +26,8 @@ export default function AuthCallback() {
             pathToken;
 
         const token = rawToken ? decodeURIComponent(rawToken).trim() : '';
-
+        const email = 
+        params.get('email');
         const rawUsername =
             params.get('name') ||
             params.get('username') ||
@@ -47,6 +48,9 @@ export default function AuthCallback() {
             localStorage.setItem('auth_token', token);
             if (username) {
                 localStorage.setItem('username', username);
+            }
+            if(email){
+                localStorage.setItem('email',email)
             }
             navigate('/dash', { replace: true });
         } else if (existingToken) {

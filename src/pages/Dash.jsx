@@ -2,11 +2,13 @@ import React,{useState,useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useToast } from '../useToast';
+import UserPickerModal from './UserPickerModal.jsx'
 
 const Dash = () => {
   const navigate = useNavigate();
   const [username,setusername] = useState('');
   const { showToast } = useToast();
+  const [modal,setmodal] = useState(false);
   useEffect(() => {
     const username = localStorage.getItem('username');
       setusername(username);
@@ -40,7 +42,34 @@ const Dash = () => {
       }
     }
   };
+  const Userlist = () => {
+    setmodal(true)
+  }
+  const createconv = async (id) => {
+    console.log(id)
+    
+      try {
+        const token = localStorage.getItem('token');
 
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/create",
+        {
+          user_two_id : Number(id)
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      console.log(response.data)
+      }
+      catch(error) {
+        console.log(error)
+      }
+    }
+  
+  
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#f8f7f4] p-[20px] font-sans text-[#1a1a2e]">
       {/* App Container */}
@@ -62,9 +91,13 @@ const Dash = () => {
               <button className="w-[34px] h-[34px] rounded-full border border-[#e2e0da] flex items-center justify-center hover:bg-gray-50 text-gray-500 transition-colors">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21L16.65 16.65"/></svg>
               </button>
-              <button className="w-[34px] h-[34px] rounded-full border border-[#e2e0da] flex items-center justify-center hover:bg-gray-50 text-gray-500 transition-colors">
+              <button className="w-[34px] h-[34px] rounded-full border border-[#e2e0da] flex items-center justify-center hover:bg-gray-50 text-gray-500 transition-colors cursor-pointer" onClick={() => Userlist()}>
                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               </button>
+              {modal && <UserPickerModal isOpen={true} onClose={() => setmodal(false)} onConfirm={(selected) => {
+                createconv(selected)
+              }}/>}
+              
             </div>
           </div>
 
