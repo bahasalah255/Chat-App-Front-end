@@ -22,9 +22,21 @@ export default function AuthCallback() {
             hashParams.get('access_token') ||
             hashParams.get('auth_token') ||
             hashParams.get('accessToken') ||
+            
             pathToken;
 
         const token = rawToken ? decodeURIComponent(rawToken).trim() : '';
+
+        const rawUsername =
+            params.get('name') ||
+            params.get('username') ||
+            params.get('user_name') ||
+            params.get('fullName') ||
+            hashParams.get('name') ||
+            hashParams.get('username') ||
+            '';
+        const username = rawUsername ? decodeURIComponent(rawUsername).trim() : '';
+
         const existingToken =
             localStorage.getItem('token') ||
             localStorage.getItem('auth_token') ||
@@ -33,10 +45,16 @@ export default function AuthCallback() {
         if (token) {
             localStorage.setItem('token', token);
             localStorage.setItem('auth_token', token);
+            if (username) {
+                localStorage.setItem('username', username);
+            }
             navigate('/dash', { replace: true });
         } else if (existingToken) {
             localStorage.setItem('token', existingToken);
             localStorage.setItem('auth_token', existingToken);
+            if (username) {
+                localStorage.setItem('username', username);
+            }
             navigate('/dash', { replace: true });
         } else {
             navigate('/login', { replace: true });
