@@ -1,15 +1,21 @@
-import React from 'react';
+import React,{useState,useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useToast } from '../useToast';
 
 const Dash = () => {
   const navigate = useNavigate();
+  const [username,setusername] = useState('');
   const { showToast } = useToast();
+  useEffect(() => {
+    const username = localStorage.getItem('username');
+      setusername(username);
+  },[])
 
   const handleLogout = async () => {
     try {
       const token = localStorage.getItem('token');
+
       const response = await axios.post(
         "http://127.0.0.1:8000/api/logout",
         {},
@@ -81,7 +87,7 @@ const Dash = () => {
                 <div className="absolute bottom-0 right-0 w-[14px] h-[14px] bg-[#28c840] border-[2px] border-white rounded-full"></div>
               </div>
               <div className="flex flex-col">
-                <span className="text-[14px] font-semibold text-[#1a1a2e]">Moaad B.</span>
+                <span className="text-[14px] font-semibold text-[#1a1a2e]">{username}</span>
                 <span className="text-[11px] font-medium text-[#28c840]">● Active</span>
               </div>
             </div>
